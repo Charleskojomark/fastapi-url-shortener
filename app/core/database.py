@@ -1,13 +1,9 @@
 import os
-from pymongo import MongoClient
+from motor.motor_asyncio import AsyncIOMotorClient
 from dotenv import load_dotenv
 from pymongo.errors import ConnectionFailure
 load_dotenv()
 
-client = MongoClient(os.getenv("MONGO_URI"))
+client = AsyncIOMotorClient(os.getenv("MONGO_URI"))
+db = client["url_shortener"]
 
-try:
-    client.admin.command("ping")
-    print("Connected to mongodb")
-except ConnectionFailure as e:
-    print("failed to connect". e)
