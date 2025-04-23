@@ -14,7 +14,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="URL Shortener API", version="1.0.0", lifespan=lifespan)
 app.include_router(url_router)
-app.include_router(user_router, prefix="/auth")
+app.include_router(user_router, prefix="/api/auth")
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
