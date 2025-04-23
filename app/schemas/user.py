@@ -1,8 +1,8 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 class UserInCreate(BaseModel):
     username: str
-    email: str
+    email: EmailStr
     password: str
 
     class Config:
@@ -16,7 +16,7 @@ class UserInCreate(BaseModel):
 
 class UserInDB(BaseModel):
     username: str
-    email: str
+    email: EmailStr
     hashed_password: str
 
     class Config:
@@ -27,3 +27,7 @@ class UserInDB(BaseModel):
                 "hashed_password": "hashedpassword123456"
             }
         }
+        
+class LoginRequest(BaseModel):
+    username: str
+    password: str

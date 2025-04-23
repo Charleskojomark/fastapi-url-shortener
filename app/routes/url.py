@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request
-from controllers.url import URLController
-from services.url import URLService
+from app.controllers.url import URLController
+from app.services.url import URLService
 
 url_service = URLService()
 url_controller = URLController(url_service)

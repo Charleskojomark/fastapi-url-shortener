@@ -1,6 +1,6 @@
-from core.database import db
-from models.url import URL
-from utils.hash import generate_hash
+from app.core.database import db
+from app.models.url import URL
+from app.utils.hash import generate_hash
 
 class URLService:
     async def shorten_url(self, original_url: str, base_url: str) -> str:

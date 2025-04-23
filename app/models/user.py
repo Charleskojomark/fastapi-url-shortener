@@ -1,12 +1,11 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 class User(BaseModel):
     username: str
-    email: str
-    hashed_password: str  # Store the hashed password
-
+    email: EmailStr
+    hashed_password: str
+    
     class Config:
-        # You can include extra fields or modify the schema representation
         json_schema_extra = {
             "example": {
                 "username": "john_doe",

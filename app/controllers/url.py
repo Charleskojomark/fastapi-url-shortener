@@ -1,7 +1,7 @@
 from fastapi import Request, HTTPException, status
 from fastapi.responses import RedirectResponse
-from services.url import URLService
-from schemas.url import URLRequest
+from app.services.url import URLService
+from app.schemas.url import URLRequest
 
 class URLController:
     def __init__(self, url_service: URLService):
