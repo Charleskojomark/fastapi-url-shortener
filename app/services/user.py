@@ -1,10 +1,11 @@
 import os
 import jwt
 import datetime
+from fastapi import Request, HTTPException
 from passlib.hash import pbkdf2_sha256
 from app.models.user import User
 from app.core.database import db
-from app.schemas.user import UserInCreate
+from app.schemas.user import UserInCreate, LoginRequest
 from typing import Optional
 from dotenv import load_dotenv
 load_dotenv()
@@ -45,6 +46,8 @@ class AuthService:
             return User(**user_data)
         return None
     
+    
+    
     @staticmethod
     async def create_user(user: UserInCreate) -> User:
         hashed_password = AuthService.hash_password(user.password)
@@ -56,3 +59,29 @@ class AuthService:
         await db.users.insert_one(new_user)
         return new_user
         
+    @staticmethod
+    async def parse_login_input(request: Request) -> LoginRequest:
+        content_type = request.headers.get("Content-Type", "")
+
+        if "application/json" in content_type:
+            try: 
+                body = await request.json()
+            except Exception:
+                raise HTTPException(status_code=400, detail="Invalid JSON body")
+
+            identifier = body.get("username") or body.get("email")
+            if not identifier or "password" not in body:
+                raise HTTPException(status_code=400, detail="Missing credentials")
+
+            return LoginRequest(username_or_email=identifier, password=body["password"])
+
+        elif "application/x-www-form-urlencoded" in content_type:
+            form = await request.form()
+            identifier = form.get("username") or form.get("email")
+            if not identifier or "password" not in form:
+                raise HTTPException(status_code=400, detail="Missing credentials")
+
+            return LoginRequest(username_or_email=identifier, password=form["password"])
+
+        raise HTTPException(status_code=415, detail="Unsupported Content-Type")
+            

@@ -16,3 +16,4 @@ async def create_indexes():
 async def init_db():    
     await create_indexes()
 
+

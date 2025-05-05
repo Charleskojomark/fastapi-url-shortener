@@ -1,33 +1,22 @@
 from pydantic import BaseModel, EmailStr
 
-class UserInCreate(BaseModel):
+class User(BaseModel):
     username: str
     email: EmailStr
+
+class UserInCreate(User):
     password: str
 
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "username": "john_doe",
-                "email": "john@example.com",
-                "password": "strongpassword123"
-            }
-        }
-
-class UserInDB(BaseModel):
-    username: str
-    email: EmailStr
+class UserInDB(User):
     hashed_password: str
 
-    class Config:
-        json_schema_extra = {
-            "example": {
-                "username": "john_doe",
-                "email": "john@example.com",
-                "hashed_password": "hashedpassword123456"
-            }
-        }
         
 class LoginRequest(BaseModel):
-    username: str
+    username_or_email: str
     password: str
+    
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+    
