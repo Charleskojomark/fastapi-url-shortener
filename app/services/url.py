@@ -1,9 +1,11 @@
 from app.core.database import db
 from app.models.url import URL
 from app.utils.hash import generate_hash
+from typing import Optional
+
 
 class URLService:
-    async def shorten_url(self, original_url: str, base_url: str) -> str:
+    async def shorten_url(self, original_url: str, base_url: str, user_id: Optional[str]) -> str:
         existing_data = {
             "original_url":original_url
         }
@@ -17,7 +19,9 @@ class URLService:
         data = {
             "original_url": original_url,
             "short_url": short_url,
-            "short_hash": short_hash
+            "short_hash": short_hash,
+            "user_id": user_id,
+            "clicks": 0
         }
         await db.urls.insert_one(data)
         return short_url

@@ -1,14 +1,18 @@
 import os
 import jwt
 import datetime
-from fastapi import Request, HTTPException
+from fastapi import Request, HTTPException, Depends, status
+from fastapi.security import OAuth2PasswordBearer
+from jwt.exceptions import InvalidTokenError
 from passlib.hash import pbkdf2_sha256
 from app.models.user import User
 from app.core.database import db
-from app.schemas.user import UserInCreate, LoginRequest
-from typing import Optional
+from app.schemas.user import UserInCreate, LoginRequest, Token, TokenData
+from typing import Optional, Annotated
 from dotenv import load_dotenv
 load_dotenv()
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
 
 class AuthService:
     
@@ -84,4 +88,24 @@ class AuthService:
             return LoginRequest(username_or_email=identifier, password=form["password"])
 
         raise HTTPException(status_code=415, detail="Unsupported Content-Type")
-            
+    
+    @staticmethod        
+    async def get_current_user(token: Annotated[Optional[str], Depends(oauth2_scheme)]) -> User:
+        credentials_exception = HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+        try:
+            payload = jwt.decode(token, os.getenv("SECRET_KEY"), algorithms=[os.getenv("ALGORITHM")])
+            email = payload.get("sub")
+            if email is None:
+                raise credentials_exception
+            token_data = TokenData(email=email)
+        except InvalidTokenError:
+            raise credentials_exception
+        user_data = await db.users.find_one({"email": email})
+        if user_data is None:
+            raise credentials_exception
+        return User(**user_data)
+    
