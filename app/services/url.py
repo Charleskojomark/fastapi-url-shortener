@@ -5,7 +5,7 @@ from typing import Optional
 
 
 class URLService:
-    async def shorten_url(self, original_url: str, base_url: str, user_id: Optional[str]) -> str:
+    async def shorten_url(self, original_url: str, base_url: str, user_id: Optional[str], custom_hash: Optional[str] = None) -> str:
         existing_data = {
             "original_url":original_url
         }
@@ -14,7 +14,7 @@ class URLService:
             existing_url = URL(**existing_url)
             return existing_url.short_url
         
-        short_hash = generate_hash(original_url, 6)
+        short_hash = custom_hash or generate_hash(original_url, 6)
         short_url = f"{base_url}{short_hash}"
         data = {
             "original_url": original_url,

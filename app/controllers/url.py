@@ -15,7 +15,9 @@ class URLController:
     async def shorten_url_v1(self, request: Request, url_request: URLRequest):
         base_url = str(request.base_url)
         original_url = url_request.original_url
-        short_url = await self.url_service.shorten_url(original_url, base_url, user_id=None)
+        custom_hash = url_request.custom_alias
+        short_url = await self.url_service.shorten_url(original_url, base_url, user_id=None, custom_hash=custom_hash)
+        
         data = {
             "shortened_url": short_url
         }
@@ -25,7 +27,8 @@ class URLController:
         base_url = str(request.base_url)
         original_url = url_request.original_url
         user_id = current_user.username 
-        short_url = await self.url_service.shorten_url(original_url, base_url, user_id)
+        custom_hash = url_request.custom_alias
+        short_url = await self.url_service.shorten_url(original_url, base_url, user_id=None, custom_hash=custom_hash)
         data = {
             "shortened_url": short_url
         }
